@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_dynamicproxy" default="compile.module.dynamicproxy">
+  <dirname property="module.dynamicproxy.basedir" file="${ant.file.module_dynamicproxy}"/>
+  
+  <property name="module.jdk.home.dynamicproxy" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dynamicproxy" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dynamicproxy" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dynamicproxy" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="dynamicproxy.output.dir" value="${module.dynamicproxy.basedir}/out/production/DynamicProxy"/>
+  <property name="dynamicproxy.testoutput.dir" value="${module.dynamicproxy.basedir}/out/test/DynamicProxy"/>
+  
+  <path id="dynamicproxy.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dynamicproxy.module.production.classpath">
+    <path refid="${module.jdk.classpath.dynamicproxy}"/>
+    <pathelement location="${router-api.output.dir}"/>
+    <pathelement location="${router-compiler.output.dir}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+    <path refid="library.com.classpath"/>
+  </path>
+  
+  <path id="dynamicproxy.runtime.production.module.classpath">
+    <pathelement location="${dynamicproxy.output.dir}"/>
+    <path refid="router-api.runtime.production.module.classpath"/>
+    <path refid="router-compiler.runtime.production.module.classpath"/>
+    <path refid="router-annotation.runtime.production.module.classpath"/>
+    <path refid="library.com.classpath"/>
+  </path>
+  
+  <path id="dynamicproxy.module.classpath">
+    <path refid="${module.jdk.classpath.dynamicproxy}"/>
+    <pathelement location="${dynamicproxy.output.dir}"/>
+    <pathelement location="${router-api.testoutput.dir}"/>
+    <pathelement location="${router-api.output.dir}"/>
+    <pathelement location="${router-compiler.testoutput.dir}"/>
+    <pathelement location="${router-compiler.output.dir}"/>
+    <pathelement location="${router-annotation.testoutput.dir}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+    <path refid="library.com.classpath"/>
+  </path>
+  
+  <path id="dynamicproxy.runtime.module.classpath">
+    <pathelement location="${dynamicproxy.testoutput.dir}"/>
+    <pathelement location="${dynamicproxy.output.dir}"/>
+    <path refid="router-api.runtime.module.classpath"/>
+    <path refid="router-compiler.runtime.module.classpath"/>
+    <path refid="router-annotation.runtime.module.classpath"/>
+    <path refid="library.com.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dynamicproxy">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dynamicproxy">
+    <patternset refid="excluded.from.module.dynamicproxy"/>
+  </patternset>
+  
+  <path id="dynamicproxy.module.sourcepath">
+    <dirset dir="${module.dynamicproxy.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dynamicproxy" depends="compile.module.dynamicproxy.production,compile.module.dynamicproxy.tests" description="Compile module DynamicProxy"/>
+  
+  <target name="compile.module.dynamicproxy.production" depends="register.custom.compilers,compile.module.router-api,compile.module.router-compiler,compile.module.router-annotation" description="Compile module DynamicProxy; production classes">
+    <mkdir dir="${dynamicproxy.output.dir}"/>
+    <javac2 destdir="${dynamicproxy.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dynamicproxy}/javac">
+      <compilerarg line="${compiler.args.dynamicproxy}"/>
+      <bootclasspath refid="dynamicproxy.module.bootclasspath"/>
+      <classpath refid="dynamicproxy.module.production.classpath"/>
+      <src refid="dynamicproxy.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dynamicproxy"/>
+    </javac2>
+    
+    <copy todir="${dynamicproxy.output.dir}">
+      <fileset dir="${module.dynamicproxy.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dynamicproxy.tests" depends="register.custom.compilers,compile.module.dynamicproxy.production" description="compile module DynamicProxy; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dynamicproxy" description="cleanup module">
+    <delete dir="${dynamicproxy.output.dir}"/>
+    <delete dir="${dynamicproxy.testoutput.dir}"/>
+  </target>
+</project>

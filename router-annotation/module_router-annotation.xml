@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_router-annotation" default="compile.module.router-annotation">
+  <dirname property="module.router-annotation.basedir" file="${ant.file.module_router-annotation}"/>
+  
+  <property name="module.jdk.home.router-annotation" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.router-annotation" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.router-annotation" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.router-annotation" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="router-annotation.output.dir" value="${module.router-annotation.basedir}/../out/production/router-annotation"/>
+  <property name="router-annotation.testoutput.dir" value="${module.router-annotation.basedir}/../out/test/router-annotation"/>
+  
+  <path id="router-annotation.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="router-annotation.module.production.classpath">
+    <path refid="${module.jdk.classpath.router-annotation}"/>
+  </path>
+  
+  <path id="router-annotation.runtime.production.module.classpath">
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-annotation.module.classpath">
+    <path refid="${module.jdk.classpath.router-annotation}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-annotation.runtime.module.classpath">
+    <pathelement location="${router-annotation.testoutput.dir}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.router-annotation">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.router-annotation">
+    <patternset refid="excluded.from.module.router-annotation"/>
+  </patternset>
+  
+  <path id="router-annotation.module.sourcepath">
+    <dirset dir="${module.router-annotation.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.router-annotation" depends="compile.module.router-annotation.production,compile.module.router-annotation.tests" description="Compile module router-annotation"/>
+  
+  <target name="compile.module.router-annotation.production" depends="register.custom.compilers" description="Compile module router-annotation; production classes">
+    <mkdir dir="${router-annotation.output.dir}"/>
+    <javac2 destdir="${router-annotation.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.router-annotation}/javac">
+      <compilerarg line="${compiler.args.router-annotation}"/>
+      <bootclasspath refid="router-annotation.module.bootclasspath"/>
+      <classpath refid="router-annotation.module.production.classpath"/>
+      <src refid="router-annotation.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.router-annotation"/>
+    </javac2>
+    
+    <copy todir="${router-annotation.output.dir}">
+      <fileset dir="${module.router-annotation.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.router-annotation.tests" depends="register.custom.compilers,compile.module.router-annotation.production" description="compile module router-annotation; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.router-annotation" description="cleanup module">
+    <delete dir="${router-annotation.output.dir}"/>
+    <delete dir="${router-annotation.testoutput.dir}"/>
+  </target>
+</project>

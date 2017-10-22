@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_router-api" default="compile.module.router-api">
+  <dirname property="module.router-api.basedir" file="${ant.file.module_router-api}"/>
+  
+  <property name="module.jdk.home.router-api" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.router-api" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.router-api" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.router-api" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="router-api.output.dir" value="${module.router-api.basedir}/../out/production/router-api"/>
+  <property name="router-api.testoutput.dir" value="${module.router-api.basedir}/../out/test/router-api"/>
+  
+  <path id="router-api.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="router-api.module.production.classpath">
+    <path refid="${module.jdk.classpath.router-api}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-api.runtime.production.module.classpath">
+    <pathelement location="${router-api.output.dir}"/>
+    <path refid="router-annotation.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="router-api.module.classpath">
+    <path refid="${module.jdk.classpath.router-api}"/>
+    <pathelement location="${router-api.output.dir}"/>
+    <pathelement location="${router-annotation.testoutput.dir}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-api.runtime.module.classpath">
+    <pathelement location="${router-api.testoutput.dir}"/>
+    <pathelement location="${router-api.output.dir}"/>
+    <path refid="router-annotation.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.router-api">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.router-api">
+    <patternset refid="excluded.from.module.router-api"/>
+  </patternset>
+  
+  <path id="router-api.module.sourcepath">
+    <dirset dir="${module.router-api.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.router-api" depends="compile.module.router-api.production,compile.module.router-api.tests" description="Compile module router-api"/>
+  
+  <target name="compile.module.router-api.production" depends="register.custom.compilers,compile.module.router-annotation" description="Compile module router-api; production classes">
+    <mkdir dir="${router-api.output.dir}"/>
+    <javac2 destdir="${router-api.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.router-api}/javac">
+      <compilerarg line="${compiler.args.router-api}"/>
+      <bootclasspath refid="router-api.module.bootclasspath"/>
+      <classpath refid="router-api.module.production.classpath"/>
+      <src refid="router-api.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.router-api"/>
+    </javac2>
+    
+    <copy todir="${router-api.output.dir}">
+      <fileset dir="${module.router-api.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.router-api.tests" depends="register.custom.compilers,compile.module.router-api.production" description="compile module router-api; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.router-api" description="cleanup module">
+    <delete dir="${router-api.output.dir}"/>
+    <delete dir="${router-api.testoutput.dir}"/>
+  </target>
+</project>

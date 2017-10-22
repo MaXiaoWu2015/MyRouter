@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_router-compiler" default="compile.module.router-compiler">
+  <dirname property="module.router-compiler.basedir" file="${ant.file.module_router-compiler}"/>
+  
+  <property name="module.jdk.home.router-compiler" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.router-compiler" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.router-compiler" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.router-compiler" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="router-compiler.output.dir" value="${module.router-compiler.basedir}/../out/production/router-compiler"/>
+  <property name="router-compiler.testoutput.dir" value="${module.router-compiler.basedir}/../out/test/router-compiler"/>
+  
+  <path id="router-compiler.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="router-compiler.module.production.classpath">
+    <path refid="${module.jdk.classpath.router-compiler}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-compiler.runtime.production.module.classpath">
+    <pathelement location="${router-compiler.output.dir}"/>
+    <path refid="router-annotation.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="router-compiler.module.classpath">
+    <path refid="${module.jdk.classpath.router-compiler}"/>
+    <pathelement location="${router-compiler.output.dir}"/>
+    <pathelement location="${router-annotation.testoutput.dir}"/>
+    <pathelement location="${router-annotation.output.dir}"/>
+  </path>
+  
+  <path id="router-compiler.runtime.module.classpath">
+    <pathelement location="${router-compiler.testoutput.dir}"/>
+    <pathelement location="${router-compiler.output.dir}"/>
+    <path refid="router-annotation.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.router-compiler">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.router-compiler">
+    <patternset refid="excluded.from.module.router-compiler"/>
+  </patternset>
+  
+  <path id="router-compiler.module.sourcepath">
+    <dirset dir="${module.router-compiler.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.router-compiler" depends="compile.module.router-compiler.production,compile.module.router-compiler.tests" description="Compile module router-compiler"/>
+  
+  <target name="compile.module.router-compiler.production" depends="register.custom.compilers,compile.module.router-annotation" description="Compile module router-compiler; production classes">
+    <mkdir dir="${router-compiler.output.dir}"/>
+    <javac2 destdir="${router-compiler.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.router-compiler}/javac">
+      <compilerarg line="${compiler.args.router-compiler}"/>
+      <bootclasspath refid="router-compiler.module.bootclasspath"/>
+      <classpath refid="router-compiler.module.production.classpath"/>
+      <src refid="router-compiler.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.router-compiler"/>
+    </javac2>
+    
+    <copy todir="${router-compiler.output.dir}">
+      <fileset dir="${module.router-compiler.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.router-compiler.tests" depends="register.custom.compilers,compile.module.router-compiler.production" description="compile module router-compiler; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.router-compiler" description="cleanup module">
+    <delete dir="${router-compiler.output.dir}"/>
+    <delete dir="${router-compiler.testoutput.dir}"/>
+  </target>
+</project>
