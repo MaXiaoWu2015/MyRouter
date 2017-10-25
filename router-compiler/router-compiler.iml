@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="router-annotation" />
     <orderEntry type="library" name="com.squareup:javapoet:1.8.0" level="project" />
+    <orderEntry type="module" module-name="router-api" />
+    <orderEntry type="library" name="com.google.auto.service:auto-service:1.0-rc3" level="project" />
   </component>
 </module>

@@ -1,7 +1,4 @@
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.*;
 import inject.Inject;
 import inject.InjectUriParam;
 
@@ -9,7 +6,11 @@ import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TargetClass {
+
+
+    private static final ClassName PARAMETERS_INJECTOR = ClassName.get("routerapi","ParametersInjector");
 
     private List<FieldInjecting> fieldInjectings;
 
@@ -69,6 +70,25 @@ public class TargetClass {
 
         return builder.build();
     }
+    public void addField(FieldInjecting fieldInjecting) {
+        fieldInjectings.add(fieldInjecting);
+    }
+
+    public JavaFile brewJava() {
+
+        TypeName targetType = TypeVariableName.get("T");
+
+        TypeSpec.Builder builder = TypeSpec.classBuilder(injectingClassName.simpleName())
+                .addModifiers(Modifier.PUBLIC)
+                .addTypeVariable(TypeVariableName.get("T",targetTypeName))
+                .addSuperinterface(PARAMETERS_INJECTOR)
+                .addMethod(createInjectMethod(targetType));
+        return JavaFile.builder(injectingClassName.packageName(),builder.build())
+                .addFileComment("Generated code from Routetr. Do not modify")
+                .build();
+
+    }
+
         private String buildStatement(int type, boolean isActivity) {
             String statement = "";
             switch (type) {
@@ -177,10 +197,6 @@ public class TargetClass {
             return statement + ";";
         }
 
-
-    public void addField(FieldInjecting fieldInjecting) {
-        fieldInjectings.add(fieldInjecting);
-    }
 }
 
 

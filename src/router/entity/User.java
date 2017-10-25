@@ -1,8 +1,10 @@
 package router.entity;
 
+import inject.InjectUriParam;
+
 public class User {
-    public String name;
-    public int    age;
+    public @InjectUriParam String  name;
+    public @InjectUriParam int    age;
 
     public User(String name, int age) {
         this.name = name;

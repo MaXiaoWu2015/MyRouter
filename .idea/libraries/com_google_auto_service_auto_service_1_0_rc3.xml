@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.google.auto.service:auto-service:1.0-rc3" type="repository">
+    <properties maven-id="com.google.auto.service:auto-service:1.0-rc3" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/auto-service-1.0-rc3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/auto-common-0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guava-19.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

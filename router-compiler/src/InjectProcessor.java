@@ -1,16 +1,20 @@
 
+import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import inject.Inject;
 import inject.InjectUriParam;
 
 import javax.annotation.processing.*;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
@@ -29,6 +33,7 @@ import java.util.*;
 
  * */
 @SupportedAnnotationTypes("inject.*")
+@AutoService(Processor.class)
 public class InjectProcessor extends AbstractProcessor{
 
 
@@ -53,9 +58,25 @@ public class InjectProcessor extends AbstractProcessor{
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-        //类--->被注解的属性生成的代码
+
+        //解析注解
+        //targetClassMap:类--->被注解的属性生成的代码
         Map<TypeElement,TargetClass> targetClassMap = findAndParseTargets(roundEnv);
 
+        //解析完成后,生成的代码结构就有了,将其生成文件
+        for (Map.Entry<TypeElement,TargetClass> entry:targetClassMap.entrySet()) {
+
+            TypeElement element = entry.getKey();
+            TargetClass targetClass = entry.getValue();
+
+            JavaFile javaFile = targetClass.brewJava();
+
+            try {
+                javaFile.writeTo(filer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         return false;
     }
@@ -111,11 +132,14 @@ public class InjectProcessor extends AbstractProcessor{
         TargetClass targetClass = targetClassMap.get(typeElement);
         if (targetClass == null){
 
+            //类上的泛型
             TypeName targetType = TypeName.get(typeElement.asType());
 
 
             String packageName = getPackageName(typeElement);
+            System.out.println("targetTypeElement packageName:"+packageName);
             String className = getClassName(typeElement,packageName);
+            System.out.println("targetTypeElement brew ClassName:"+className);
             ClassName bindingClassName = ClassName.get(packageName,className+"_RouterInjecting");
 
             targetClass = new TargetClass(typeTools,targetType,bindingClassName);
@@ -204,4 +228,9 @@ public class InjectProcessor extends AbstractProcessor{
         }
         processingEnv.getMessager().printMessage(kind,message,element);
     }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
     }
+}

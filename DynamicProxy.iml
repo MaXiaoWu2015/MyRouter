@@ -11,5 +11,6 @@
     <orderEntry type="module" module-name="router-compiler" exported="" />
     <orderEntry type="module" module-name="router-annotation" />
     <orderEntry type="library" exported="" name="com.squareup:javapoet:1.8.0" level="project" />
+    <orderEntry type="library" exported="" name="com.google.auto.service:auto-service:1.0-rc3" level="project" />
   </component>
 </module>
